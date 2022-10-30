@@ -1,9 +1,43 @@
 Added code blocks using ctrl +E
 
+**Verification**
+ 1) Event Viewer (Local)\Applications and Services Logs\Microsoft\Windows\WLAN-AutoConfig\Operational for wireless isues
+ 2) For wired network access isssues, go to ..\Wired-AutoConfig\Operational
+ 
+**Ubuntu aceess using Vmware**
+$vmware-hgfsclient
+	shared-vm-folder
+$ sudo vmhgfs-fuse .host:/shared-vm-folder /mnt/hgfs/ -o allow_other -o uid=1000
+
+
 It is all about 802.1x file 
-All steps are taken from following link... Thanks to this website..
+
+
+**All steps are taken from following link... Thanks to this website..**
 
 https://www.personal-privacy.com/2019/09/strong-home-wifi-protection.html
+
+**Documentation**
+
+https://learn.microsoft.com/en-us/troubleshoot/windows-client/networking/802-1x-authentication-issues-troubleshooting
+
+
+**Start and stop Radius server **
+
+sudo  /etc/init.d/rc.radiusd start (start radius server)
+sudo  /etc/init.d/rc.radiusd reaload (reload radius server)
+sudo  /etc/init.d/rc.radiusd stop (stop radius server)
+
+**For location**
+      ca.der and client.p12 located at /var/certs/freeradius
+      
+      clients.p12 -> CurrentUser   -> select location automatically
+      ca.der      -> localComputer -> select "Trusted Root Certification Authorities"
+
+
+
+
+
 
 Steps for certificate generation on Radius server
 
