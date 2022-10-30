@@ -1,3 +1,5 @@
+# This is just the sample certificate addition script neeeds to be updated for validationg certificate
+
 $a=Import-PfxCertificate -FilePath C:\client_certificate.p12 -CertStoreLocation Cert:\CurrentUser\my -Password (ConvertTo -SecureString -String 'password' -AsPlainText -Force)
 echo "Client certificate uploaded successfully"
 

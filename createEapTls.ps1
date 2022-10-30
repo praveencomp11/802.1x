@@ -20,7 +20,11 @@ function validateRetValFromPrevCommand()
 	}	
    
 }
-
+$parrService= Get-Service -Name $pstrServiceName | select -property status, starttype
+if(!(validateRetValFromPrevCommand))
+{
+	exit $piRetVal[1]
+}
 
 $a=Import-PfxCertificate -FilePath C:\client_certificate.p12 -CertStoreLocation Cert:\CurrentUser\my -Password (ConvertTo -SecureString -String 'password' -AsPlainText -Force)
 echo "Client certificate uploaded successfully"
