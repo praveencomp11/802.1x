@@ -1,11 +1,13 @@
-It is all about 802.1x file 
+#It is all about 802.1x file 
+
+
 All steps are taken from following link... Thanks to this website..
 
 https://www.personal-privacy.com/2019/09/strong-home-wifi-protection.html
 
 Steps for certificate generation on Radius server
 
-Step 1: Installing Free-Radius on Ubuntu
+##Step 1: Installing Free-Radius on Ubuntu
 		First, install the package using
 	
 	apt-get -y install freeradius nano /etc/freeradius/3.0/radiusd.conf
@@ -74,7 +76,10 @@ Here, comment out everything except preprocess, eap, expiration, and logintime f
 Next
 cd /etc/freeradius/3.0/sites-enabled/
 ln -s ../sites-available/your_router_name .
-Step 2: Creating Certificates
+
+
+
+##Step 2: Creating Certificates
 Next step is to create certificates to connect to your WiFi.
 apt-get install -y make
 cd /etc/freeradius/3.0/certs/
@@ -137,7 +142,7 @@ ufw allow 1812
 ufw disable && ufw enable
 
 
-Step 3: Setting up your router
+##Step 3: Setting up your router
 After setting up your Free-Radius server, you need to tell your router about it. Each router has a different setup, so I cannot cover all of them here. For a TP-Link Archer C5400, go to Advanced, then Wireless. In Security field, choose WPA/WPA2-Enterprise. For RADIUS Server IP, enter the IP address of your server (if you don't know it, simply run ip -a on your server). For RADIUS Port, enter 1812 and in RADIUS password, enter the password you chose in /etc/freeradius/3.0/clients.conf file.
 
 Importing your certificate to a Windows Client
