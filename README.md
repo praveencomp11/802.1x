@@ -21,7 +21,8 @@ comment this entire section (by adding a # to the start of each line)
 	client localhost { … }
 	
 and edit the following lines (at the end of the file)
-'''	
+
+```	
 client your_router_name {
   ipaddr = 192.168.1.1
   secret = password
@@ -31,7 +32,7 @@ client your_router_name {
     idle_timeout = 432000
   }
 }
-'''
+```
 Here, you can use whatever name you want for the router, but you need the IP address of your router. Also, you need to create a password for this router and later enter it in the router setting page (we will get to that later). After finding the address, replace the one above with this address.
 
 Next, edit
@@ -41,7 +42,7 @@ Next, edit
 First, comment everything in md5, leap, gtc, ttls, peap and mschapv2 sections.
 Then, in tls-config section, make sure to only have these settings:
 
-'''
+```
 tls-config tls-common {
    private_key_password = 'Passphrase'
    private_key_file = ${certdir}/server.pem
@@ -57,7 +58,7 @@ tls-config tls-common {
    verify {
     tmpdir = /var/tmp/radiusd
     client = "/usr/bin/openssl verify -CAfile /etc/freeradius/3.0/certs/ca.pem %{TLS-Client-Cert-Filename}"
-'''
+```
 
 The 'Passphrase' here is your certificate's secret passphrase. You will need to choose one and later use it when creating your certificates.
 
@@ -67,7 +68,7 @@ tls = tls-common
 should be uncommented.
 Next, run these commands
 
-'''
+```
 mkdir /var/tmp/radiusd
 chown freerad /var/tmp/radiusd
 chgrp freerad /var/tmp/radiusd
@@ -76,22 +77,22 @@ cd /etc/freeradius/3.0/sites-enabled/
 rm *
 cd /etc/freeradius/3.0/sites-available/
 cp default your_router_name
-'''
+```
 
 nano your_router_name
 Here, comment out everything except preprocess, eap, expiration, and logintime from the authorize section. Comment out everything but eap from the authenticate section.
 Next
 
-'''
+```
 cd /etc/freeradius/3.0/sites-enabled/
 ln -s ../sites-available/your_router_name .
-'''
+```
 
 
 **Step 2: Creating Certificates**
 
 Next step is to create certificates to connect to your WiFi.
-'''
+```
 apt-get install -y make
 cd /etc/freeradius/3.0/certs/
 rm *.pem
@@ -107,13 +108,13 @@ chmod 600 *
 make destroycerts
 make index.txt
 make serial
-'''
+```
 
 You need to create a secret passphrase in order to sign and use your certificates. This is the same passphrase you needed for /etc/freeradius/3.0/mods-available. This passphrase must be repeated in three files: ca.cnf, server.cnf and client.cnf in input_password and output_password fields. You need to provide this passphrase whenever you want to add your certificate to a new device as well.
 
 
 Next, edit:
-'''
+```
 nano /var/certs/freeradius/ca.cnf
 Change 'default_bits' from 2048 to at most 4096.
 Change 'default_days' to 3650.
@@ -123,12 +124,12 @@ The rest are optional! The certificate authority section must match in all three
 Then, run
 make ca.pem
 make ca.der
-'''
+```
 
 Edit:
-'''
+```
 	nano /var/certs/freeradius/server.cnf
-'''
+```
 and make the same changes here. Then, run:
 
 make server.pem
@@ -138,16 +139,17 @@ Here, you need to choose a username in [client] section. The rest should match t
 Before making the client files, edit Makefile
 nano /var/certs/freeradius/Makefile
 In client section, add these lines:
-'''
+```
+
 client.p12: client.crt
     openssl pkcs12 -export -in client.crt -inkey client.key -out client.p12 -passin pass:$(PASSWORD_CLIENT) -passout pass:$(PASSWORD_CLIENT)
     cp client.p12 $(USER_NAME).p12
 client.pem: client.p12
     openssl pkcs12 -in client.p12 -out client.pem -passin pass:$(PASSWORD_CLIENT) -passout pass:$(PASSWORD_CLIENT)
     cp client.pem $(USER_NAME).pem
-'''
+```
 Make sure indented lines are 'tabs' and not 'spaces'!
-'''
+```
 make client.pem
 chmod 600 *
 chmod 640 ca.pem
@@ -160,13 +162,13 @@ cd /etc/freeradius/certs/
 ln -s /var/certs/freeradius/ca.pem ca.pem
 ln -s /var/certs/freeradius/server.pem server.pem
 ln -s /var/certs/freeradius/server.key server.key
-'''
+```
 To generate a new certificate for a new client (another person in your household or another device), you need to change the name of the client in client.cnf anf re-run the first three lines (starting from make client.pem)
 Free-Radius needs to communicate through a specific port and the default is 1812. Change the firewall rule to allow this:
-'''
+```
 ufw allow 1812
 ufw disable && ufw enable
-'''
+```
 
 **Step 3: Setting up your router**
 After setting up your Free-Radius server, you need to tell your router about it. Each router has a different setup, so I cannot cover all of them here. For a TP-Link Archer C5400, go to Advanced, then Wireless. In Security field, choose WPA/WPA2-Enterprise. For RADIUS Server IP, enter the IP address of your server (if you don't know it, simply run ip -a on your server). For RADIUS Port, enter 1812 and in RADIUS password, enter the password you chose in /etc/freeradius/3.0/clients.conf file.
